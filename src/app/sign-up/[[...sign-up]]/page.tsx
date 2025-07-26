@@ -1,11 +1,9 @@
-// In Clerk, we need to insert the sign in page info as the environment variable in the .env file
-
-import { SignIn } from '@clerk/nextjs'
+import { SignUp } from '@clerk/nextjs'
 
 export default function Page() {
   return<>
     <div className='bg-zinc-900 min-h-screen flex items-center justify-center'>
-      <SignIn 
+      <SignUp 
   appearance={{
     elements: {
       // Main card styling
