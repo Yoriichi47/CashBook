@@ -35,7 +35,7 @@ export default function RootLayout({
       
     <html lang="en">
       <body
-        className={`${FunnelFont.variable} bg-zinc-900 antialiased`}
+        className={`${FunnelFont.variable} text-zinc-100 bg-zinc-900 antialiased`}
         >
       <Navbar />
         {children}

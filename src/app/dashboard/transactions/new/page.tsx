@@ -7,8 +7,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { metadata } from "@/app/layout";
 
 const page = () => {
+
+  metadata.title = "Create New Transaction - Finance Uchiha";
+
   return (
     <div className="p-6">
       <Breadcrumb>
