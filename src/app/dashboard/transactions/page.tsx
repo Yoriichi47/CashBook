@@ -15,7 +15,9 @@ const page = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="text-zinc-300">
-            <BreadcrumbLink className="hover:text-zinc-100" href="/dashboard">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink asChild className="hover:text-zinc-100">
+              <Link href="/dashboard">Dashboard</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-zinc-500" />
           <BreadcrumbPage>

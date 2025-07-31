@@ -36,7 +36,7 @@ export default function page() {
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
                 <Button variant={"secondary"} asChild>
-                  <Link href="/transactions">Transactions</Link>
+                  <Link href="/dashboard/transactions">Transactions</Link>
                 </Button>
               </SignedIn>
               <SignedOut>

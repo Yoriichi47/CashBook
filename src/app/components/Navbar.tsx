@@ -7,7 +7,7 @@ import UserDropdown from "./UserDropdown";
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-200 flex justify-between items-center py-4 px-8">
+    <nav className="bg-gray-200 flex justify-between items-center p-4">
       <div className="Logo flex items-center gap-2">
         <div>
           <Image
