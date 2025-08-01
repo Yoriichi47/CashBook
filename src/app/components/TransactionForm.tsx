@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Form,
@@ -7,66 +7,97 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar";
+import { useForm, Resolver, SubmitHandler } from "react-hook-form";
+import React from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { addDays } from 'date-fns'
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-const transactionSchema = z.object({
-  transactionType: z.enum(['income', 'expense']),
-  categoryId: z.coerce.number().positive('Please select a category'),
-  transactionDate: z.coerce
-    .date()
-    .max(addDays(new Date(), 1), 'Date must be in the future'),
-  amount: z.coerce.number().positive('Amount must be greater than zero'),
-  description: z
-    .string()
-    .min(5, 'Description is required')
-    .max(200, 'Description cannot exceed 200 characters'),
-})
-
-type TransactionInput = z.input<typeof transactionSchema>
+type FormValues = {
+  transactionType: string;
+  categoryId: number;
+  transactionDate: Date;
+  amount: number;
+  description: string;
+};
 
 const TransactionForm = () => {
-  const form = useForm<TransactionInput>({
-    resolver: zodResolver(transactionSchema),
-    defaultValues: {
-      transactionType: 'income',
-      categoryId: 1, // Can't be 0 if using `.positive()`
-      transactionDate: new Date(),
-      amount: 1,
-      description: '',
-    },
-  })
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
 
-  const handleSubmit = async (data: TransactionInput) => {
-    console.log('submitted:', data)
-  }
+  const resolver: Resolver<FormValues> = async (values) => {
+    const errors: any = {};
+
+    if (!values.transactionType) {
+      errors.transactionType = {
+        type: "required",
+        message: "Transaction type is required",
+      };
+    }
+
+    if (!values.categoryId && values.categoryId !== 0) {
+      errors.categoryId = {
+        type: "required",
+        message: "Category is required",
+      };
+    }
+
+    if (!values.transactionDate) {
+      errors.transactionDate = {
+        type: "required",
+        message: "Transaction date is required",
+      };
+    }
+
+    if (
+      values.amount === undefined ||
+      values.amount === null ||
+      isNaN(Number(values.amount))
+    ) {
+      errors.amount = {
+        type: "required",
+        message: "Amount is required",
+      };
+    } else if (Number(values.amount) <= 0) {
+      errors.amount = {
+        type: "min",
+        message: "Amount must be greater than 0",
+      };
+    }
+
+    if (!values.description || values.description.trim() === "") {
+      errors.description = {
+        type: "required",
+        message: "Description is required",
+      };
+    }
+
+    return {
+      values: Object.keys(errors).length === 0 ? values : {},
+      errors,
+    };
+  };
+
+  const form = useForm<FormValues>({ resolver });
+
+  const onSubmit = form.handleSubmit((data) => console.log(data));
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <fieldset className='grid grid-cols-2 gap-y-5 gap-x-2'>
+      <form onSubmit={onSubmit} className="grid grid-cols-2 gap-x-8 gap-y-4">
         <FormField
-          control={form.control}
           name="transactionType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Transaction Type</FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a transaction type" />
-                  </SelectTrigger>
+                <Select {...field}>
+                  <SelectTrigger>Select a transaction type</SelectTrigger>
                   <SelectContent>
                     <SelectItem value="income">Income</SelectItem>
                     <SelectItem value="expense">Expense</SelectItem>
@@ -78,17 +109,36 @@ const TransactionForm = () => {
           )}
         />
         <FormField
-          control={form.control}
           name="categoryId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                <Select value={(field.value as number).toString()} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a transaction type" />
-                  </SelectTrigger>
+                <Select {...field}>
+                  <SelectTrigger>Select a Category</SelectTrigger>
+                  <SelectContent></SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Date</FormLabel>
+              <FormControl>
+                <Select {...field}>
+                  <SelectTrigger>Select a date</SelectTrigger>
                   <SelectContent>
+                      <Calendar                      
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        className="rounded-md w-full border shadow-sm"
+                        captionLayout="dropdown"
+                      />
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -96,10 +146,21 @@ const TransactionForm = () => {
             </FormItem>
           )}
         />
-          </fieldset>
+        <FormField
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amount</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter amount" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </form>
     </Form>
-  )
-}
+  );
+};
 
-export default TransactionForm
+export default TransactionForm;
