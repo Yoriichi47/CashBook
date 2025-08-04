@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
+import insertData from "@/serverActions/insertData";
 
 type FormValues = {
   transactionType: string;
@@ -110,7 +111,8 @@ const TransactionForm = ({
     },
   });
 
-  const onSubmit = form.handleSubmit((data) => {
+  const onSubmit = form.handleSubmit(async (data) => {
+    await insertData(data)
     console.log("Form Submitted:", { data });
     form.reset({
       transactionType: "income",
