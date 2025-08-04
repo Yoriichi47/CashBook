@@ -44,7 +44,7 @@ const page = () => {
 
         {/* Breadcumb ends */}
 
-        <div className=" lg:max-w-screen-xl md:max-w-screen-md mx-auto">
+        <div className=" lg:max-w-screen-lg md:max-w-screen-md mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>New Transaction</CardTitle>
