@@ -11,9 +11,12 @@ import { metadata } from "@/app/layout";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TransactionForm from "@/app/components/TransactionForm";
+import { getCategories } from "@/data/getCategories";
 
-const page = () => {
+const page = async () => {
   metadata.title = "Create New Transaction - Finance Uchiha";
+
+  const categories = await getCategories()
 
   return (
     <>
@@ -50,7 +53,7 @@ const page = () => {
               <CardTitle>New Transaction</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm />
+              <TransactionForm categories={categories} />
               {/* New Transaction */}
             </CardContent>
           </Card>

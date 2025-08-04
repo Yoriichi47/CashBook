@@ -37,8 +37,15 @@ type FormValues = {
   description: string;
 };
 
-const TransactionForm = () => {
-
+const TransactionForm = ({
+  categories,
+}: {
+  categories: {
+    id: number;
+    name: string;
+    type: "income" | "expense";
+  }[];
+}) => {
   const resolver: Resolver<FormValues> = async (values) => {
     const errors: any = {};
 
@@ -93,26 +100,31 @@ const TransactionForm = () => {
   };
 
   const form = useForm<FormValues>({
-  resolver,
-  defaultValues: {
-    transactionType: "",
-    categoryId: 0,
-    transactionDate: new Date(), 
-    amount: 0,
-    description: "",
-  },
-});
+    resolver,
+    defaultValues: {
+      transactionType: "income",
+      categoryId: undefined,
+      transactionDate: new Date(),
+      amount: 0,
+      description: "",
+    },
+  });
 
   const onSubmit = form.handleSubmit((data) => {
-  console.log("Form Submitted:", data);
-  form.reset({
-    transactionType: "",
-    categoryId: 0,
-    transactionDate: new Date(), 
-    amount: 0,
-    description: "",
+    console.log("Form Submitted:", { data });
+    form.reset({
+      transactionType: "income",
+      categoryId: undefined,
+      transactionDate: new Date(),
+      amount: 0,
+      description: "",
+    });
   });
-});
+
+  const transactionType = form.watch("transactionType");
+  const filteredCategories = categories.filter(
+    (Category) => Category.type === transactionType
+  );
 
   return (
     <Form {...form}>
@@ -123,19 +135,25 @@ const TransactionForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Transaction Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(newValues) => {
+                  field.onChange(newValues);
+                  form.setValue("categoryId", 0);
+                }}
+                value={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     {field.value
                       ? field.value.charAt(0).toUpperCase() +
                         field.value.slice(1)
-                      : "Select a transaction type"}
+                      : "Income"}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="Income">Income</SelectItem>
-                    <SelectItem value="Expense">Expense</SelectItem>
+                    <SelectItem value="income">Income</SelectItem>
+                    <SelectItem value="expense">Expense</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -155,11 +173,21 @@ const TransactionForm = () => {
               >
                 <FormControl>
                   <SelectTrigger>
-                    {field.value ? field.value.toString() : "Select a Category"}
+                    {field.value
+                      ? filteredCategories.find((c) => c.id === field.value)
+                          ?.name || "Select category"
+                      : "Select category"}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="1">Trial Selection</SelectItem>
+                  {filteredCategories.map((Category) => (
+                    <SelectItem
+                      key={Category.id}
+                      value={Category.id.toString()}
+                    >
+                      {Category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -194,7 +222,7 @@ const TransactionForm = () => {
                       disabled={{ after: new Date() }}
                       mode="single"
                       selected={field.value}
-                      onSelect={(date) => field.onChange(date)} 
+                      onSelect={(date) => field.onChange(date)}
                     />
                   </PopoverContent>
                 </Popover>
@@ -213,7 +241,7 @@ const TransactionForm = () => {
                 <Input
                   type="number"
                   placeholder="Enter amount"
-                  value={field.value ?? ""}
+                  value={field.value}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
