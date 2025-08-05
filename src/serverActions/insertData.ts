@@ -11,23 +11,66 @@ const insertData = async (data: {
     amount: number;
     description: string;
 }) => {
+    const errors: any = {}
 
-    const {userId} = await auth()
+    const { userId } = await auth()
 
-    if(!userId){
+    if (!userId) {
         return {
             error: true,
             message: "User not authenticated"
         }
     }
 
+    if (typeof data.categoryId !== "number") {
+        errors.categoryId = {
+            type: "required",
+            message: "Category is not chosen"
+        }
+    }
+
+    if (!data.transactionDate) {
+        errors.transactionDate = {
+            type: "required",
+            message: "Transaction date is not provided"
+        }
+    }
+
+    if (data.amount === undefined || data.amount === null || data.amount === 0) {
+        errors.amount = {
+            type: "required",
+            message: "Amount is not provided"
+        }
+    }
+
+    if (!data.description) {
+        errors.description = {
+            type: "required",
+            message: "Description is not provided"
+        }
+    }
+
+    if (Object.keys(errors).length > 0) {
+        return {
+            error: true,
+            message: "Validation errors found",
+            details: errors
+        }
+    }
+
     const result = await db.insert(transactionSchema).values({
-        transactionDate: format(data.transactionDate, "dd-MM-yyyy"),
+        transactionDate: format(data.transactionDate, "PPP"),
         categoryId: data.categoryId,
         amount: data.amount,
         description: data.description,
         userId
     })
+
+    return {
+        error: false,
+        message: "Transaction added successfully",
+        result
+    }
 }
 
 export default insertData

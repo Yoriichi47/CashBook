@@ -54,7 +54,6 @@ const page = async () => {
             </CardHeader>
             <CardContent>
               <TransactionForm categories={categories} />
-              {/* New Transaction */}
             </CardContent>
           </Card>
         </div>

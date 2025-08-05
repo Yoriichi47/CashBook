@@ -57,7 +57,7 @@ const TransactionForm = ({
       };
     }
 
-    if (!values.categoryId && values.categoryId !== 0) {
+    if (values.categoryId === undefined || values.categoryId === null) {
       errors.categoryId = {
         type: "required",
         message: "Category is required",
@@ -112,8 +112,14 @@ const TransactionForm = ({
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
-    await insertData(data)
-    console.log("Form Submitted:", { data });
+    
+    const result = await insertData(data);
+
+    if (result?.error) {
+      console.error("Server-side validation failed:", result.details);
+      return;
+    }
+
     form.reset({
       transactionType: "income",
       categoryId: undefined,
