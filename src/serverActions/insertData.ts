@@ -53,13 +53,13 @@ const insertData = async (data: {
     if (Object.keys(errors).length > 0) {
         return {
             error: true,
-            message: "Validation errors found",
+            message: "There was an error while validating the data",
             details: errors
         }
     }
 
-    const result = await db.insert(transactionSchema).values({
-        transactionDate: format(data.transactionDate, "PPP"),
+    await db.insert(transactionSchema).values({
+        transactionDate: format(data.transactionDate, "yyyy-MM-dd"),
         categoryId: data.categoryId,
         amount: data.amount,
         description: data.description,
@@ -69,7 +69,6 @@ const insertData = async (data: {
     return {
         error: false,
         message: "Transaction added successfully",
-        result
     }
 }
 

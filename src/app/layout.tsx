@@ -10,6 +10,7 @@ import {
   UserButton,
 } from '@clerk/nextjs'
 import Navbar from "./components/Navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 const FunnelFont = Funnel_Display({
   weight: ["300", "400", "500", "600", "700","800"],
@@ -39,6 +40,12 @@ export default function RootLayout({
         >
       <Navbar />
         {children}
+        <Toaster richColors position="top-right" toastOptions={{
+    style: {
+      background: 'black',
+      color: 'white',
+    },
+  }}/>
       </body>
     </html>
         </ClerkProvider>

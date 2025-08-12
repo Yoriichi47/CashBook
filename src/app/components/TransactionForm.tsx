@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Calendar } from "@/components/ui/calendar";
-import { useForm, Resolver, SubmitHandler } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import React from "react";
 import {
   Select,
@@ -29,12 +29,14 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import insertData from "@/serverActions/insertData";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type FormValues = {
   transactionType: string;
   categoryId: number;
   transactionDate: Date;
-  amount: number;
+  amount: number | undefined;
   description: string;
 };
 
@@ -100,6 +102,8 @@ const TransactionForm = ({
     };
   };
 
+  const router = useRouter();
+
   const form = useForm<FormValues>({
     resolver,
     defaultValues: {
@@ -112,12 +116,27 @@ const TransactionForm = ({
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
-    
-    const result = await insertData(data);
+    const validatedData = {
+      ...data,
+      amount: Number(data.amount), // force number
+    };
 
-    if (result?.error) {
-      console.error("Server-side validation failed:", result.details);
+    const result = await insertData(validatedData);
+
+    if (result?.error === true) {
+      console.log("Server-side validation failed:", result.details);
+      console.log("Error message:", result.message);
+      toast.error("Error", {
+        description: "Failed to add transaction.",
+      });
       return;
+    } else if (result?.error === false) {
+      router.push("/dashboard/transactions");
+      console.log("Transaction added successfully");
+      console.log("Result:", result.message);
+      toast.success("Success", {
+        description: "Your transaction has been added.",
+      });
     }
 
     form.reset({
@@ -136,149 +155,157 @@ const TransactionForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="grid grid-cols-2 gap-x-8 gap-y-4">
-        <FormField
-          control={form.control}
-          name="transactionType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Transaction Type</FormLabel>
-              <Select
-                onValueChange={(newValues) => {
-                  field.onChange(newValues);
-                  form.setValue("categoryId", 0);
-                }}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    {field.value
-                      ? field.value.charAt(0).toUpperCase() +
-                        field.value.slice(1)
-                      : "Income"}
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="income">Income</SelectItem>
-                    <SelectItem value="expense">Expense</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select
-                onValueChange={(val) => field.onChange(Number(val))}
-                value={field.value?.toString()}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    {field.value
-                      ? filteredCategories.find((c) => c.id === field.value)
-                          ?.name || "Select category"
-                      : "Select category"}
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {filteredCategories.map((Category) => (
-                    <SelectItem
-                      key={Category.id}
-                      value={Category.id.toString()}
-                    >
-                      {Category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="transactionDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date</FormLabel>
-              <FormControl>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      data-empty={!field.value}
-                      className="data-[empty=true]:text-muted-foreground w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-2">
-                    <Calendar
-                      disabled={{ after: new Date() }}
-                      mode="single"
-                      selected={field.value}
-                      onSelect={(date) => field.onChange(date)}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter amount"
+      <form onSubmit={onSubmit}>
+        <fieldset
+          disabled={form.formState.isSubmitting}
+          className="grid grid-cols-2 gap-x-8 gap-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="transactionType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Transaction Type</FormLabel>
+                <Select
+                  onValueChange={(newValues) => {
+                    field.onChange(newValues);
+                    form.setValue("categoryId", 0);
+                  }}
                   value={field.value}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Enter description"
-                  value={field.value ?? ""}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="col-span-2">
-          <Button className="w-full mt-2" type="submit">
-            Add Transaction
-          </Button>
-        </div>
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {field.value
+                        ? field.value.charAt(0).toUpperCase() +
+                          field.value.slice(1)
+                        : "Income"}
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="income">Income</SelectItem>
+                      <SelectItem value="expense">Expense</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="categoryId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  value={field.value?.toString()}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {field.value
+                        ? filteredCategories.find((c) => c.id === field.value)
+                            ?.name || "Select category"
+                        : "Select category"}
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {filteredCategories.map((Category) => (
+                      <SelectItem
+                        key={Category.id}
+                        value={Category.id.toString()}
+                      >
+                        {Category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="transactionDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date</FormLabel>
+                <FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        data-empty={!field.value}
+                        className="data-[empty=true]:text-muted-foreground w-full justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-2">
+                      <Calendar
+                        disabled={{ after: new Date() }}
+                        mode="single"
+                        selected={field.value}
+                        onSelect={(date) => field.onChange(date)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      field.onChange(val === "" ? undefined : Number(val));
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter description"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="col-span-2">
+            <Button className="w-full mt-2" type="submit">
+              Add Transaction
+            </Button>
+          </div>
+        </fieldset>
       </form>
     </Form>
   );
