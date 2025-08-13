@@ -124,16 +124,12 @@ const TransactionForm = ({
     const result = await insertData(validatedData);
 
     if (result?.error === true) {
-      console.log("Server-side validation failed:", result.details);
-      console.log("Error message:", result.message);
       toast.error("Error", {
         description: "Failed to add transaction.",
       });
       return;
     } else if (result?.error === false) {
-      router.push("/dashboard/transactions");
-      console.log("Transaction added successfully");
-      console.log("Result:", result.message);
+      router.push(`/dashboard/transactions?month=${data.transactionDate.getMonth() + 1}&year=${data.transactionDate.getFullYear()}`);
       toast.success("Success", {
         description: "Your transaction has been added.",
       });

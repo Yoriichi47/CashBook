@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
-import { transactionSchema } from "@/db/schema";
 import {
   Table,
   TableBody,
@@ -20,10 +19,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/db";
+import { z } from "zod";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
 
-const page = async () => {
+const currentDate = new Date();
+
+const searchSchema = z.object({
+  year: z.coerce
+    .number()
+    .min(currentDate.getFullYear() - 100)
+    .max(currentDate.getFullYear())
+    .catch(currentDate.getFullYear()),
+  month: z.coerce
+    .number()
+    .min(1)
+    .max(12)
+    .catch(currentDate.getMonth() + 1),
+});
+
+const page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string; month?: string }>;
+}) => {
   metadata.title = "Transactions - Finance Uchiha";
+
+  const searchParamValues = await searchParams;
+
+  const { year, month } = searchSchema.parse(searchParamValues);
+
+  const selectedDate = new Date(year, month - 1, 1);
 
   return (
     <>
@@ -51,7 +77,16 @@ const page = async () => {
         <Link href="/dashboard/transactions/new">Create New Transaction</Link>
       </Button>
 
-      <Table className="container w-[80%] mx-auto px-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="container flex items-center justify-between">
+            <span>Transactions for {format(selectedDate, "MMM yyyy")}</span>
+            <span>Dropdown Area</span>
+          </CardTitle>
+        </CardHeader>
+      </Card>
+
+      <Table className="container w-[80%] mt-6 mx-auto px-4">
         <TableCaption>Your Transactions</TableCaption>
         <TableHeader>
           <TableRow>
