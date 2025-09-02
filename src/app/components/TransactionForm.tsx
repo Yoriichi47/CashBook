@@ -268,6 +268,8 @@ const TransactionForm = ({
                   <Input
                     type="number"
                     placeholder="Enter amount"
+                    min={0}
+                    step="0.01"
                     value={field.value ?? ""}
                     onChange={(e) => {
                       const val = e.target.value;

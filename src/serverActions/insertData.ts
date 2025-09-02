@@ -61,7 +61,7 @@ const insertData = async (data: {
     await db.insert(transactionSchema).values({
         transactionDate: format(data.transactionDate, "yyyy-MM-dd"),
         categoryId: data.categoryId,
-        amount: data.amount,
+        amount: data.amount.toString(),  //While using nueric() in the schema, you have to convert the value to the string in order for it to work.
         description: data.description,
         userId
     })
