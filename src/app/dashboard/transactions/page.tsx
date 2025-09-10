@@ -44,7 +44,7 @@ const searchSchema = z.object({
 type Category = {
   id: number;
   name: string;
-}
+};
 
 const page = async ({
   searchParams,
@@ -60,9 +60,6 @@ const page = async ({
   const selectedDate = new Date(year, month - 1, 1);
 
   const transactions = await getTransaction({ year, month });
-  
-  const categories = await getCategories()
-  console.log("Categories in page: ", {categories})
 
   return (
     <>
@@ -100,11 +97,16 @@ const page = async ({
             </Link>
           </Button>
 
-{
-  transactions?.length === 0 ? (
-
           <Table className="container w-[80%] mt-6 mx-auto px-4">
-            <TableCaption>Your Transactions</TableCaption>
+            {
+              transactions && transactions.length > 0 ? (
+              <TableCaption>
+                Your transactions for {format(selectedDate, "MMM yyyy")}
+              </TableCaption>
+              ) : (
+              <TableCaption />
+              )
+            }
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px]">No.</TableHead>
@@ -114,33 +116,37 @@ const page = async ({
                 <TableHead>Description</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {transactions?.map((transaction, index) => {
-                return (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">{`${
-                      index + 1
-                    }`}</TableCell>
-                    <TableCell>{`$${transaction.amount}`}</TableCell>
-                    <TableCell>
-                      {format(
-                        new Date(transaction.transactionDate),
-                        "MMM dd, yyyy"
-                      )}
-                    </TableCell>
-                    <TableCell>{transaction.categoryId}</TableCell>
-                    <TableCell>{transaction.description}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+            {transactions && transactions.length > 0 ? (
+              <TableBody>
+                {transactions?.map((transaction, index) => {
+                  return (
+                    <TableRow key={transaction.id}>
+                      <TableCell className="font-medium">{`${
+                        index + 1
+                      }`}</TableCell>
+                      <TableCell>{`$${transaction.amount}`}</TableCell>
+                      <TableCell>
+                        {format(
+                          new Date(transaction.transactionDate),
+                          "MMM dd, yyyy"
+                        )}
+                      </TableCell>
+                      <TableCell>{transaction.categoryName}</TableCell>
+                      <TableCell>{transaction.description}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            ) : (
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No transactions found for this month.
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            )}
           </Table>
-  ): (
-    <p>
-      No transactions found for current month
-    </p>
-  )
-}
         </CardContent>
       </Card>
     </>

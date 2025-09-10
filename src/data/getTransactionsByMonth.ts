@@ -1,8 +1,8 @@
 import { db } from "@/db";
-import { transactionSchema } from "@/db/schema";
+import { categorySchema, transactionSchema } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { and, ConsoleLogWriter, desc, eq, gte, lte, sql } from "drizzle-orm";
 import "server-only";
 
 export async function getTransaction({
@@ -18,23 +18,43 @@ export async function getTransaction({
     return null;
   }
 
+  console.log("User: ", userId);
+
   const earliestDate = new Date(year, month - 1, 1);
-  const latestDate = new Date(year, month, 0);
+  const lastDate = new Date(year, month, 0); // Last day of the month
 
   const transactions = await db
-    .select()
+    .select({
+      id: transactionSchema.id,
+      description: transactionSchema.description,
+      amount: transactionSchema.amount,
+      transactionDate: transactionSchema.transactionDate,
+      transactionType: categorySchema.type,
+      categoryId: transactionSchema.categoryId,
+      categoryName: categorySchema.name,
+    })
     .from(transactionSchema)
     .where(
       and(
         eq(transactionSchema.userId, userId), // Checks and compares the userId in the table
-        gte(  // Checks for the dates greater than the earliestDate
+        gte(
+          // Checks for the dates greater than the earliestDate
           transactionSchema.transactionDate,
           format(earliestDate, "yyyy-MM-dd")
         ), // The function won't work without formatting the date
-        lte(transactionSchema.transactionDate, format(latestDate, "yyyy-MM-dd"))
+        lte(transactionSchema.transactionDate, format(lastDate, "yyyy-MM-dd"))
       )
     )
-    .orderBy(desc(transactionSchema.transactionDate));
+    .orderBy(desc(transactionSchema.transactionDate))
+    .leftJoin(
+      categorySchema,
+      eq(transactionSchema.categoryId, categorySchema.id)
+    );
 
-    return transactions
+  if (transactions.length === 0) {
+    console.log("Data is empty");
+  } else {
+    console.log("Data: ", transactions);
+  }
+  return transactions;
 }
