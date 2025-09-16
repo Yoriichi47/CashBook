@@ -51,10 +51,5 @@ export async function getTransaction({
       eq(transactionSchema.categoryId, categorySchema.id)
     );
 
-  if (transactions.length === 0) {
-    console.log("Data is empty");
-  } else {
-    console.log("Data: ", transactions);
-  }
   return transactions;
 }

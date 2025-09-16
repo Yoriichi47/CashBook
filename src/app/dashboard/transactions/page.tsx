@@ -23,8 +23,10 @@ import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { getTransaction } from "@/data/getTransactionsByMonth";
-import { getCategories } from "@/data/getCategories";
-import { transactionSchema } from "@/db/schema";
+import { PencilIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { DateSelector } from "@/app/components/DateSelector";
+import { getTransactionYearRange } from "@/data/getTransactionYearRange";
 
 const currentDate = new Date();
 
@@ -41,11 +43,6 @@ const searchSchema = z.object({
     .catch(currentDate.getMonth() + 1),
 });
 
-type Category = {
-  id: number;
-  name: string;
-};
-
 const page = async ({
   searchParams,
 }: {
@@ -56,6 +53,7 @@ const page = async ({
   const searchParamValues = await searchParams;
 
   const { year, month } = searchSchema.parse(searchParamValues);
+  const yearRange = await getTransactionYearRange();
 
   const selectedDate = new Date(year, month - 1, 1);
 
@@ -87,7 +85,9 @@ const page = async ({
         <CardHeader>
           <CardTitle className="container flex items-center justify-between">
             <span>Transactions for {format(selectedDate, "MMM yyyy")}</span>
-            <span>Dropdown Area</span>
+            <div>
+              <DateSelector year={year} month={month} yearRange={yearRange} />{" "}
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -97,23 +97,23 @@ const page = async ({
             </Link>
           </Button>
 
-          <Table className="container w-[80%] mt-6 mx-auto px-4">
-            {
-              transactions && transactions.length > 0 ? (
+          <Table className="container w-[90%] mt-6 mx-auto px-4">
+            {transactions && transactions.length > 0 ? (
               <TableCaption>
                 Your transactions for {format(selectedDate, "MMM yyyy")}
               </TableCaption>
-              ) : (
+            ) : (
               <TableCaption />
-              )
-            }
+            )}
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">No.</TableHead>
+                <TableHead className="w-[50px]">No.</TableHead>
                 <TableHead className="w-[150px]">Amount</TableHead>
-                <TableHead className="w-[150px]">Transaction Date</TableHead>
-                <TableHead className="w-[150px]">Category</TableHead>
+                <TableHead className="w-[200px]">Transaction Date</TableHead>
+                <TableHead className="w-[200px]">Category</TableHead>
+                <TableHead className="w-[200px]">Type</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead className="w-[50px]">Edit</TableHead>
               </TableRow>
             </TableHeader>
             {transactions && transactions.length > 0 ? (
@@ -132,7 +132,27 @@ const page = async ({
                         )}
                       </TableCell>
                       <TableCell>{transaction.categoryName}</TableCell>
+                      <TableCell className="capitalize">
+                        <Badge
+                          className={`${
+                            transaction.transactionType === `income`
+                              ? "bg-green-600 text-white hover:bg-green-700"
+                              : "bg-red-600 text-white hover:bg-red-700"
+                          } `}
+                        >
+                          {transaction.transactionType}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{transaction.description}</TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/dashboard/transactions/edit?id=${transaction.id}`}
+                        >
+                          <Button className="hover:bg-zinc-800 transform-gpu ">
+                            <PencilIcon />{" "}
+                          </Button>
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -140,7 +160,7 @@ const page = async ({
             ) : (
               <TableBody>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     No transactions found for this month.
                   </TableCell>
                 </TableRow>

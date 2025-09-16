@@ -10,14 +10,28 @@ import {
 import { metadata } from "@/app/layout";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TransactionForm from "@/app/components/TransactionForm";
 import { getCategories } from "@/data/getCategories";
+import { getDataByID } from "@/data/getDataByID";
+import EditForm from "@/app/components/EditForm";
 
-const page = async () => {
-  metadata.title = "Create New Transaction - Finance Uchiha";
+const page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id: number }>;
+}) => {
+  metadata.title = "Edit Transaction - Finance Uchiha";
 
-  const categories = await getCategories()
+  const categories = await getCategories();
+  const { id } = await searchParams;
+  const data = await getDataByID({ id });
 
+  if(!data){
+    return(
+      <div>No Transaction found</div>
+    )
+  }
+  
+  console.log("Data:", data);
   return (
     <>
       {/* Breadcrumb starts */}
@@ -39,21 +53,21 @@ const page = async () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="text-zinc-500" />
               <BreadcrumbPage className="text-white">
-                <BreadcrumbItem>New Transaction</BreadcrumbItem>
+                <BreadcrumbItem>Edit Transaction</BreadcrumbItem>
               </BreadcrumbPage>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
 
-        {/* Breadcumb ends */}
+        {/* Breadcrumb ends */}
 
-        <div className=" lg:max-w-screen-lg md:max-w-screen-md mx-auto">
+        <div className="lg:max-w-screen-lg md:max-w-screen-md mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>New Transaction</CardTitle>
+              <CardTitle>Edit Transaction</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm categories={categories} />
+              <EditForm data={data} categories={categories} />
             </CardContent>
           </Card>
         </div>
