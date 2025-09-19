@@ -24,8 +24,7 @@ const updateData = async (data: {
     };
   }
 
-  if (data.id == null || typeof data.id !== "number")
-{
+  if (data.id == null || typeof data.id !== "number") {
     errors.id = {
       type: "required",
       message: "ID is not provided",

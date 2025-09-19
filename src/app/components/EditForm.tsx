@@ -160,14 +160,6 @@ const TransactionForm = ({
         description: "Your transaction has been updated.",
       });
     }
-
-    form.reset({
-      transactionType: "income",
-      categoryId: undefined,
-      transactionDate: new Date(),
-      amount: 0,
-      description: "",
-    });
   });
 
   const transactionType = form.watch("transactionType");

@@ -10,9 +10,8 @@ import {
 import { metadata } from "@/app/layout";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCategories } from "@/data/getCategories";
 import { getDataByID } from "@/data/getDataByID";
-import EditForm from "@/app/components/EditForm";
+import DeleteForm from "@/app/components/DeleteForm";
 import NotFound from "@/app/components/NotFound";
 
 const page = async ({
@@ -22,7 +21,6 @@ const page = async ({
 }) => {
   metadata.title = "Edit Transaction - Finance Uchiha";
 
-  const categories = await getCategories();
   const { id } = await searchParams;
   const data = await getDataByID({ id });
 
@@ -31,7 +29,7 @@ const page = async ({
       <NotFound />
     )
   }
-  
+
   return (
     <>
       {/* Breadcrumb starts */}
@@ -53,7 +51,7 @@ const page = async ({
               </BreadcrumbItem>
               <BreadcrumbSeparator className="text-zinc-500" />
               <BreadcrumbPage className="text-white">
-                <BreadcrumbItem>Edit Transaction</BreadcrumbItem>
+                <BreadcrumbItem>Delete Transaction</BreadcrumbItem>
               </BreadcrumbPage>
             </BreadcrumbList>
           </Breadcrumb>
@@ -64,10 +62,10 @@ const page = async ({
         <div className="lg:max-w-screen-lg md:max-w-screen-md mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Edit Transaction</CardTitle>
+              <CardTitle>Delete Transaction</CardTitle>
             </CardHeader>
             <CardContent>
-              <EditForm data={data} categories={categories} />
+              <DeleteForm data={data} />
             </CardContent>
           </Card>
         </div>

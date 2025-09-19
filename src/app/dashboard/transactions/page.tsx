@@ -22,8 +22,8 @@ import {
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { getTransaction } from "@/data/getTransactionsByMonth";
-import { PencilIcon } from "lucide-react";
+import { getSortedTransaction } from "@/data/getTransactionsByMonth";
+import { PencilIcon, TrashIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DateSelector } from "@/app/components/DateSelector";
 import { getTransactionYearRange } from "@/data/getTransactionYearRange";
@@ -57,7 +57,7 @@ const page = async ({
 
   const selectedDate = new Date(year, month - 1, 1);
 
-  const transactions = await getTransaction({ year, month });
+  const transactions = await getSortedTransaction({ year, month });
 
   return (
     <>
@@ -113,7 +113,8 @@ const page = async ({
                 <TableHead className="w-[200px]">Category</TableHead>
                 <TableHead className="w-[200px]">Type</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead className="w-[50px]">Edit</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             {transactions && transactions.length > 0 ? (
@@ -153,6 +154,15 @@ const page = async ({
                           </Button>
                         </Link>
                       </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/dashboard/transactions/delete?id=${transaction.id}`}
+                        >
+                          <Button variant={"destructive"} className="hover:bg-red-600 transform-gpu ">
+                            <TrashIcon />
+                          </Button>
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -160,7 +170,7 @@ const page = async ({
             ) : (
               <TableBody>
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center">
+                  <TableCell colSpan={8} className="text-center">
                     No transactions found for this month.
                   </TableCell>
                 </TableRow>

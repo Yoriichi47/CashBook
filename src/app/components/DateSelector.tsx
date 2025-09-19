@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
-import { getTransactionYearRange } from "@/data/getTransactionYearRange";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
