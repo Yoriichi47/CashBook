@@ -6,6 +6,11 @@ import { auth } from "@clerk/nextjs/server";
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
 
+type UpdateDataErrors = Record<
+  string,
+  { type: string; message: string }
+>;
+
 const updateData = async (data: {
   id: number;
   categoryId: number;
@@ -15,7 +20,7 @@ const updateData = async (data: {
 }) => {
   const { userId } = await auth();
 
-  const errors: any = {};
+  const errors: UpdateDataErrors = {};
 
   if (!userId) {
     return {

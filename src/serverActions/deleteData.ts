@@ -5,10 +5,15 @@ import { transactionSchema } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 
+type DeleteDataErrors = Record<
+  string,
+  { type: string; message: string }
+>;
+
 const deleteData = async (id: number) => {
     const {userId} = await auth()
 
-    const errors: any = {}
+    const errors: DeleteDataErrors = {}
 
     if (!userId) {
         errors.user = {

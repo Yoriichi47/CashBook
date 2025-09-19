@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Calendar } from "@/components/ui/calendar";
-import { useForm, Resolver } from "react-hook-form";
+import { useForm, Resolver, FieldErrors } from "react-hook-form";
 import React from "react";
 import {
   Select,
@@ -50,7 +50,7 @@ const TransactionForm = ({
   }[];
 }) => {
   const resolver: Resolver<FormValues> = async (values) => {
-    const errors: any = {};
+    const errors= {} as FieldErrors<FormValues>;
 
     if (!values.transactionType) {
       errors.transactionType = {

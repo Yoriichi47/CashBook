@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut} from "@clerk/nextjs";
 import UserDropdown from "./UserDropdown";
 
 const Navbar = () => {

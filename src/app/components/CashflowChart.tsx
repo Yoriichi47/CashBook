@@ -1,11 +1,15 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts"
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Value } from "@radix-ui/react-select"
 
+type CashflowRecord = {
+  month: number | string
+  income: number
+  expense: number
+}[]
 
 const chartConfig = {
   income: {
@@ -18,7 +22,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function CashflowChart({data}: {data: any[]}) {
+export function CashflowChart({data}: {data: CashflowRecord}) {
 
     const chartData = data || []
 
