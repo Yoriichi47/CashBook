@@ -2,18 +2,14 @@
 
 import { db } from "@/db";
 import { transactionSchema } from "@/db/schema";
+import { ValidationErrors } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-
-type DeleteDataErrors = Record<
-  string,
-  { type: string; message: string }
->;
 
 const deleteData = async (id: number) => {
     const {userId} = await auth()
 
-    const errors: DeleteDataErrors = {}
+    const errors: ValidationErrors = {}
 
     if (!userId) {
         errors.user = {

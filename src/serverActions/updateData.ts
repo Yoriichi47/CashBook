@@ -2,14 +2,10 @@
 
 import { db } from "@/db";
 import { transactionSchema } from "@/db/schema";
+import { ValidationErrors } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
-
-type UpdateDataErrors = Record<
-  string,
-  { type: string; message: string }
->;
 
 const updateData = async (data: {
   id: number;
@@ -20,7 +16,7 @@ const updateData = async (data: {
 }) => {
   const { userId } = await auth();
 
-  const errors: UpdateDataErrors = {};
+  const errors: ValidationErrors = {};
 
   if (!userId) {
     return {

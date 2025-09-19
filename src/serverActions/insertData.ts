@@ -2,13 +2,9 @@
 
 import { db } from "@/db"
 import { transactionSchema } from "@/db/schema"
+import { ValidationErrors } from "@/lib/types"
 import { auth } from "@clerk/nextjs/server"
 import { format } from "date-fns"
-
-type InsertDataErrors = Record<
-  string,
-  { type: string; message: string }
->;
 
 const insertData = async (data: {
     categoryId: number;
@@ -16,7 +12,7 @@ const insertData = async (data: {
     amount: number;
     description: string;
 }) => {
-    const errors: InsertDataErrors = {}
+    const errors: ValidationErrors = {}
 
     const { userId } = await auth()
 
