@@ -19,7 +19,7 @@ const page = async ({
 }: {
   searchParams: Promise<{ id: number }>;
 }) => {
-  metadata.title = "Edit Transaction - Finance Uchiha";
+  metadata.title = "Delete Transaction | CashBook";
 
   const { id } = await searchParams;
   const data = await getDataByID({ id });

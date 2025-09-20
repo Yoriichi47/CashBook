@@ -14,10 +14,10 @@ const FunnelFont = Funnel_Display({
 });
 
 export const metadata: Metadata = {
-  icons: {
-    icon: "/Finance_Uchiha_icon.png",
+  icons:{
+    icon: '/Favicon.ico'
   },
-  title: "Finance Uchiha",
+  title: "CashBook",
   description: "A personal finance app to help you manage your money better.",
 };
 

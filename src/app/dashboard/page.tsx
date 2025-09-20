@@ -16,7 +16,7 @@ const page = async ({searchParams}: {searchParams: Promise<{cashflowyear?: strin
     parsedYear = new Date().getFullYear();
   }
 
-    metadata.title = "Dashboard - Finance Uchiha";
+    metadata.title = "Dashboard | CashBook";
 
   return (
     <>

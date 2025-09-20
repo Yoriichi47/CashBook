@@ -48,7 +48,7 @@ const page = async ({
 }: {
   searchParams: Promise<{ year?: string; month?: string }>;
 }) => {
-  metadata.title = "Transactions - Finance Uchiha";
+  metadata.title = "Transactions | CashBook";
 
   const searchParamValues = await searchParams;
 

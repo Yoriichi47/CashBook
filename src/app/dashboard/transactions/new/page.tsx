@@ -14,7 +14,7 @@ import TransactionForm from "@/app/components/TransactionForm";
 import { getCategories } from "@/data/getCategories";
 
 const page = async () => {
-  metadata.title = "Create New Transaction - Finance Uchiha";
+  metadata.title = "Create New Transaction | CashBook";
 
   const categories = await getCategories()
 

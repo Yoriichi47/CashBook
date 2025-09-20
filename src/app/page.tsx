@@ -12,11 +12,11 @@ export default function page() {
             <Image
               src="/Finance_Uchiha_icon.png"
               alt="Logo"
-              width={100}
-              height={100}
+              width={300}
+              height={50}
               className="mx-auto"
             />
-            Welcome to Finance Uchiha!
+            Welcome to Cashbook!
           </div>
           <SignedIn>
             <div className="mt-4 text-center  text-zinc-400">

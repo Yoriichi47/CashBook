@@ -9,19 +9,16 @@ import UserDropdown from "./UserDropdown";
 const Navbar = () => {
   return (
     <nav className="bg-gray-200 flex justify-between items-center p-4">
-      <div className="Logo flex items-center gap-2">
+      <div className="Logo">
         <div>
-          <Image
-            src="/Finance_Uchiha_icon.png"
-            alt="Logo"
-            width={30}
-            height={30}
-          />
-        </div>
-        <div className="text-lg text-zinc-900 font-semibold">
           <Link href={"/"}>
-            <p>Finance Uchiha</p>
-          </Link>
+          <Image
+            src="/Finance_Uchiha_logo.png"
+            alt="Logo"
+            width={50}
+            height={50}
+            />
+            </Link>
         </div>
       </div>
       <div className="options flex items-center gap-2">
