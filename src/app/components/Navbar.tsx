@@ -13,8 +13,8 @@ const Navbar = () => {
         <div>
           <Link href={"/"}>
           <Image
-            src="/Finance_Uchiha_logo.png"
-            alt="Logo"
+            src="/Cashbook_logo.png"
+            alt="Cashbook Logo"
             width={50}
             height={50}
             />

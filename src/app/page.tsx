@@ -10,7 +10,7 @@ export default function page() {
         <div>
           <div className="text-zinc-100 text-3xl text-center font-semibold">
             <Image
-              src="/Finance_Uchiha_icon.png"
+              src="/Cashbook_icon.png"
               alt="Logo"
               width={300}
               height={50}
